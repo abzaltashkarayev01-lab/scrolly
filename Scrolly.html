@@ -1,0 +1,553 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Scrolly</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: playful but calm. Full-width colour bands, one 1160px column inside each; Hero = copy left, animated phone right. */
+:root {
+  --bg: #FFF9F0;
+  --surface: #FFFFFF;
+  --ink: #1F1B3A;
+  --muted: #5E5A7A;
+  --line: #EADFCB;
+  --violet: #6C4DFF;
+  --violet-2: #8F6BFF;
+  --coral: #FF5C7A;
+  --lemon: #FFD93D;
+  --mint: #2ED3A0;
+  --mint-bg: #E9FBF4;
+  --on-violet: #FFFFFF;
+  --demo-bg: #FFD93D; --demo-ink: #1F1B3A; --demo-soft: rgba(31, 27, 58, .08); --demo-line: rgba(31, 27, 58, .35);
+  --demo-eyebrow-bg: #1F1B3A; --demo-eyebrow-ink: #FFFFFF; --demo-btn-bg: #6C4DFF; --demo-btn-ink: #FFFFFF; --demo-btn-shadow: #4B32C9;
+  --footer-bg: #1F1B3A;
+  --footer-ink: #F4F1FF;
+  --shadow: 0 10px 30px rgba(31, 27, 58, .12);
+  --f-display: "Fredoka", "Trebuchet MS", system-ui, sans-serif;
+  --f-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15122B; --surface: #211D3F; --ink: #F4F1FF; --muted: #B8B3D9; --line: #343058;
+    --violet: #8A73FF; --violet-2: #6C4DFF; --demo-bg: #2B2552; --demo-ink: #F4F1FF; --demo-soft: rgba(255, 255, 255, .12); --demo-line: rgba(255, 255, 255, .4); --demo-eyebrow-bg: #FFD93D; --demo-eyebrow-ink: #1F1B3A; --demo-btn-bg: #FFD93D; --demo-btn-ink: #1F1B3A; --demo-btn-shadow: #D9B300; --mint-bg: #12302B; --footer-bg: #0E0C1F;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .4); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15122B; --surface: #211D3F; --ink: #F4F1FF; --muted: #B8B3D9; --line: #343058;
+  --violet: #8A73FF; --violet-2: #6C4DFF; --demo-bg: #2B2552; --demo-ink: #F4F1FF; --demo-soft: rgba(255, 255, 255, .12); --demo-line: rgba(255, 255, 255, .4); --demo-eyebrow-bg: #FFD93D; --demo-eyebrow-ink: #1F1B3A; --demo-btn-bg: #FFD93D; --demo-btn-ink: #1F1B3A; --demo-btn-shadow: #D9B300; --mint-bg: #12302B; --footer-bg: #0E0C1F;
+  --shadow: 0 10px 30px rgba(0, 0, 0, .4); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 18px; line-height: 1.55; overflow-x: hidden; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.1; margin: 0; text-wrap: balance; font-weight: 700; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--coral); outline-offset: 3px; border-radius: 12px; }
+.wrap { max-width: 1160px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.band { padding-block: 88px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; padding: 6px 14px; border-radius: 999px; background: var(--lemon); color: #1F1B3A; }
+.h2 { font-size: clamp(30px, 4.4vw, 46px); margin-top: 16px; }
+.lead { color: var(--muted); font-size: 20px; max-width: 58ch; margin-top: 14px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font: 700 18px/1 var(--f-display); letter-spacing: .01em; padding: 18px 28px; border-radius: 999px; border: 3px solid transparent; cursor: pointer; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; min-height: 56px; }
+.btn:hover { transform: translateY(-3px); }
+.btn-primary { background: var(--violet); color: var(--on-violet); box-shadow: 0 6px 0 #4B32C9, 0 14px 28px rgba(108, 77, 255, .3); }
+.btn-primary:hover { box-shadow: 0 9px 0 #4B32C9, 0 18px 32px rgba(108, 77, 255, .3); }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--coral); }
+.btn-ghost:hover { background: var(--coral); color: #fff; }
+.btn-lemon { background: var(--demo-btn-bg); color: var(--demo-btn-ink); box-shadow: 0 6px 0 var(--demo-btn-shadow); width: 100%; }
+.btn-lemon:hover { box-shadow: 0 9px 0 var(--demo-btn-shadow); }
+.btn-sm { padding: 12px 20px; font-size: 16px; min-height: 44px; }
+
+/* Header */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 2px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 20px; min-height: 68px; }
+.logo { display: flex; align-items: center; gap: 10px; font: 700 26px var(--f-display); text-decoration: none; color: var(--violet); }
+.logo svg { width: 36px; height: 36px; }
+.nav { display: flex; gap: 22px; margin-left: auto; font-weight: 700; }
+.nav a { text-decoration: none; color: var(--muted); }
+.nav a:hover { color: var(--ink); }
+.lang { font: 700 14px var(--f-display); display: inline-flex; border: 2px solid var(--line); border-radius: 999px; overflow: hidden; }
+.lang span { padding: 6px 12px; }
+.lang .on { background: var(--violet); color: #fff; }
+@media (max-width: 820px) { .nav { display: none; } .top .btn { margin-left: auto; } }
+@media (max-width: 460px) { .lang { display: none; } .top .btn { padding-inline: 16px; } }
+
+/* Hero */
+.hero { position: relative; overflow: hidden; padding-block: 56px 88px; }
+.hero::before { content: ""; position: absolute; width: 640px; height: 640px; right: -120px; top: -80px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, color-mix(in srgb, var(--violet) 38%, transparent), color-mix(in srgb, var(--coral) 28%, transparent) 55%, transparent 72%); filter: blur(10px); }
+.hero .wrap { position: relative; display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
+.hero h1 { font-size: clamp(44px, 7.2vw, 84px); margin-top: 20px; }
+.hero h1 .sw { position: relative; white-space: nowrap; }
+.hero h1 .sw::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 12px; background: no-repeat center / 100% 100% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12' preserveAspectRatio='none'%3E%3Cpath d='M2 7 Q 14 1 26 7 T 50 7 T 74 7 T 98 7 T 122 7 T 146 7 T 170 7 T 198 7' fill='none' stroke='%23FF5C7A' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.hero .sub { font-size: 22px; margin-top: 24px; max-width: 30em; }
+.hero .body { color: var(--muted); margin-top: 14px; max-width: 34em; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 32px; }
+.platforms { display: none; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.platforms.open { display: flex; }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 14px; background: var(--surface); border: 2px solid var(--line); font-weight: 800; text-decoration: none; }
+.micro { font-size: 15px; color: var(--muted); margin-top: 14px; }
+.trust { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 26px; font-weight: 700; font-size: 16px; }
+.trust span { display: inline-flex; gap: 8px; align-items: center; }
+.trust svg { width: 20px; height: 20px; flex: none; }
+.stage { position: relative; display: grid; place-items: center; min-height: 600px; }
+.phone { position: relative; width: 290px; aspect-ratio: 9 / 18.5; border-radius: 44px; background: #1F1B3A; padding: 10px; box-shadow: var(--shadow), 0 40px 60px rgba(108, 77, 255, .25); transform: rotate(-7deg); transition: transform .4s ease; }
+.stage:hover .phone { transform: rotate(-3deg); }
+.screen { position: relative; width: 100%; height: 100%; border-radius: 34px; overflow: hidden; background: #FFF9F0; }
+.notch { position: absolute; top: 8px; left: 50%; width: 80px; height: 20px; border-radius: 99px; background: #1F1B3A; transform: translateX(-50%); z-index: 3; }
+.track { height: 500%; animation: feed 14s infinite; }
+@keyframes feed {
+  0%, 15% { transform: translateY(0); animation-timing-function: cubic-bezier(.7, 0, .2, 1); }
+  20%, 35% { transform: translateY(-20%); animation-timing-function: cubic-bezier(.7, 0, .2, 1); }
+  40%, 55% { transform: translateY(-40%); animation-timing-function: cubic-bezier(.7, 0, .2, 1); }
+  60%, 75% { transform: translateY(-60%); animation-timing-function: cubic-bezier(.7, 0, .2, 1); }
+  80%, 100% { transform: translateY(-80%); }
+}
+.card { height: 20%; position: relative; padding: 44px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.card .tag { align-self: flex-start; font: 700 12px var(--f-display); padding: 4px 10px; border-radius: 99px; background: rgba(31, 27, 58, .12); color: #1F1B3A; }
+.card h3 { font-size: 20px; color: #1F1B3A; }
+.card .art { flex: 1; min-height: 0; border-radius: 22px; display: grid; place-items: center; overflow: hidden; }
+.card .art svg { width: 88%; height: auto; max-height: 100%; }
+.rail { position: absolute; right: 12px; bottom: 90px; display: flex; flex-direction: column; gap: 12px; align-items: center; font: 700 12px var(--f-display); color: #1F1B3A; }
+.rail i { width: 40px; height: 40px; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 3px 8px rgba(0, 0, 0, .15); font-style: normal; }
+.rail svg { width: 20px; height: 20px; }
+.c1 { background: #FFE9B8; } .c1 .art { background: #6C4DFF; }
+.c2 { background: #C9F3E5; } .c2 .art { background: #fff; }
+.c3 { background: #FFD3DC; } .c3 .art { background: #fff; }
+.c4 { background: #DCD3FF; } .c4 .art { background: #FFD93D; }
+.author { display: flex; align-items: center; gap: 8px; font: 700 13px var(--f-display); color: #1F1B3A; }
+.author b { width: 26px; height: 26px; border-radius: 50%; background: var(--coral); color: #fff; display: grid; place-items: center; font-size: 13px; }
+.float { position: absolute; pointer-events: none; animation: bob 5s ease-in-out infinite; }
+.float svg { display: block; }
+@keyframes bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-14px) rotate(6deg); } }
+.f1 { left: 4%; top: 12%; } .f2 { right: 2%; top: 22%; animation-delay: -1.5s; } .f3 { left: 0; bottom: 14%; animation-delay: -3s; } .f4 { right: 6%; bottom: 8%; animation-delay: -2s; }
+.bubble { position: absolute; left: -2%; bottom: 3%; background: var(--surface); border: 3px solid var(--ink); border-radius: 20px 20px 20px 4px; padding: 8px 14px; font: 700 15px var(--f-display); box-shadow: var(--shadow); max-width: 190px; }
+@media (max-width: 900px) {
+  .hero .wrap { grid-template-columns: 1fr; }
+  .stage { min-height: 560px; }
+}
+
+/* How it works */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 48px; position: relative; }
+.step { background: var(--surface); border: 3px solid var(--ink); border-radius: 28px; padding: 0 0 26px; box-shadow: 6px 6px 0 var(--ink); min-width: 0; overflow: hidden; }
+.step .head { display: flex; align-items: center; gap: 14px; padding: 18px 22px; border-bottom: 3px solid var(--ink); }
+.step:nth-child(1) .head { background: var(--violet); color: #fff; }
+.step:nth-child(2) .head { background: var(--lemon); color: #1F1B3A; }
+.step:nth-child(3) .head { background: var(--coral); color: #fff; }
+.num { width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #1F1B3A; display: grid; place-items: center; font: 700 24px var(--f-display); border: 3px solid #1F1B3A; flex: none; }
+.step h3 { font-size: 22px; }
+.step .pic { height: 190px; display: grid; place-items: center; background: color-mix(in srgb, var(--line) 35%, var(--surface)); }
+.step .pic svg { width: 86%; max-height: 170px; }
+.step p { padding: 20px 22px 0; color: var(--muted); }
+.after { margin-top: 44px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
+.link { font-weight: 800; color: var(--violet); text-decoration-thickness: 3px; text-underline-offset: 5px; }
+@media (max-width: 900px) { .steps { grid-template-columns: 1fr; } }
+
+/* Parents */
+.parents { background: linear-gradient(180deg, var(--mint-bg), var(--bg)); }
+.parents .eyebrow { background: var(--mint); color: #0B2F25; }
+.pgrid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 48px; align-items: center; }
+.pgrid > * { min-width: 0; }
+.cols { display: grid; gap: 16px; margin-top: 28px; }
+.pcol { display: grid; grid-template-columns: 56px 1fr; gap: 18px; background: var(--surface); border-radius: 22px; padding: 20px; border: 2px solid var(--line); }
+.pcol .ico { width: 56px; height: 56px; border-radius: 16px; background: var(--mint-bg); display: grid; place-items: center; }
+.pcol .ico svg { width: 30px; height: 30px; }
+.pcol h3 { font-size: 21px; }
+.pcol p { color: var(--muted); margin-top: 6px; font-size: 17px; }
+.checks { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 10px; font-weight: 700; }
+.checks li { display: flex; gap: 10px; align-items: flex-start; }
+.checks svg { width: 22px; height: 22px; flex: none; margin-top: 3px; }
+.facts { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+.fact { background: var(--surface); border: 2px solid var(--mint); border-radius: 18px; padding: 12px 18px; font-weight: 800; }
+.fact b { font: 700 28px var(--f-display); color: var(--mint); margin-right: 6px; }
+.ill { background: var(--surface); border-radius: 36px; padding: 18px; border: 2px solid var(--line); box-shadow: var(--shadow); }
+.ill svg { width: 100%; height: auto; display: block; }
+@media (max-width: 900px) { .pgrid { grid-template-columns: 1fr; } }
+
+/* Demo */
+.demo { background: var(--demo-bg); color: var(--demo-ink); position: relative; overflow: hidden; }
+.demo::before { content: ""; position: absolute; width: 380px; height: 380px; border-radius: 50%; right: -140px; top: -170px; background: var(--coral); opacity: .9; }
+.demo::after { content: ""; position: absolute; width: 300px; height: 300px; border-radius: 50%; left: -130px; bottom: -150px; background: var(--mint); opacity: .85; }
+.demo .wrap { position: relative; z-index: 1; }
+.demo .eyebrow { background: var(--demo-eyebrow-bg); color: var(--demo-eyebrow-ink); }
+.demo .lead { color: var(--demo-ink); opacity: .85; }
+.dgrid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: start; margin-top: 8px; }
+.dgrid > * { min-width: 0; }
+.tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 28px; max-width: 460px; }
+.tile { aspect-ratio: 1; border-radius: 14px; background: var(--demo-soft); border: 2px solid var(--demo-line); display: grid; place-items: center; }
+.tile svg { width: 60%; height: 60%; }
+.inside { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 14px; }
+.inside li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; font-size: 18px; }
+.inside svg { width: 26px; height: 26px; margin-top: 2px; }
+.inside b { font-family: var(--f-display); font-weight: 600; }
+.ticket { background: var(--surface); color: var(--ink); border-radius: 28px; padding: 32px 28px 28px; position: relative; box-shadow: 0 24px 50px rgba(20, 10, 80, .35); }
+.ticket::before { content: ""; position: absolute; top: 14px; left: 28px; right: 28px; border-top: 3px dashed var(--line); }
+.ticket h3 { font-size: 28px; margin-top: 14px; }
+.next { position: relative; margin-top: 32px; background: var(--surface); color: var(--ink); border: 3px solid var(--ink); border-radius: 24px; padding: 22px 22px 24px; box-shadow: 6px 6px 0 var(--coral); max-width: 520px; }
+.next h3 { font-size: 22px; padding-right: 84px; }
+.next-mascot { position: absolute; right: 16px; top: -26px; width: 78px; height: 78px; }
+.next ol { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 14px; }
+.next li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; font-size: 17px; line-height: 1.4; }
+.next li b { font-family: var(--f-display); font-weight: 600; }
+.next .n { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font: 700 18px var(--f-display); background: var(--lemon); color: #1F1B3A; border: 3px solid #1F1B3A; }
+.ticket .hint { color: var(--muted); font-size: 16px; margin-top: 8px; }
+form { display: grid; gap: 16px; margin-top: 22px; }
+label { font-weight: 800; font-size: 15px; display: block; margin-bottom: 6px; }
+input[type=text], select { width: 100%; height: 56px; border-radius: 16px; border: 2px solid var(--line); background: var(--bg); color: var(--ink); font: 700 17px var(--f-body); padding: 0 16px; }
+input[type=text]:focus, select:focus { outline: 3px solid var(--violet); border-color: var(--violet); }
+.invalid input, .invalid select { border-color: var(--coral); }
+.err { color: #D12E4F; font-size: 14px; font-weight: 700; margin-top: 6px; display: none; }
+:root[data-theme="dark"] .err { color: #FF8CA2; }
+.invalid .err { display: block; }
+.agree { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; font-weight: 600; color: var(--muted); }
+.agree input { width: 24px; height: 24px; flex: none; accent-color: var(--violet); margin-top: 1px; }
+.small { font-size: 14px; color: var(--muted); }
+.stores { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.stores .chip { font-size: 15px; padding: 8px 14px; }
+.stores em { font-style: normal; font-size: 12px; background: var(--lemon); color: #1F1B3A; border-radius: 99px; padding: 2px 8px; }
+.ok { display: none; text-align: center; padding: 16px 0 6px; }
+.ok.show { display: block; }
+.ok h3 { font-size: 28px; margin-top: 10px; }
+.ok p { color: var(--muted); margin-top: 8px; }
+.confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; border-radius: 28px; }
+.confetti i { position: absolute; top: -12px; width: 10px; height: 16px; border-radius: 3px; animation: fall 1.8s ease-in forwards; }
+@keyframes fall { to { transform: translateY(520px) rotate(540deg); opacity: 0; } }
+@media (max-width: 900px) { .dgrid { grid-template-columns: 1fr; } }
+
+/* Footer */
+footer { background: var(--footer-bg); color: var(--footer-ink); padding-block: 64px 36px; position: relative; overflow: hidden; }
+.safe { display: grid; grid-template-columns: 56px 1fr; gap: 18px; border: 3px solid var(--mint); border-radius: 22px; padding: 22px; background: rgba(46, 211, 160, .08); max-width: 820px; }
+.safe svg { width: 56px; height: 56px; }
+.safe b { font: 700 24px var(--f-display); color: var(--mint); display: block; }
+.safe p { margin-top: 6px; font-size: 17px; color: var(--footer-ink); }
+.fcols { display: flex; flex-wrap: wrap; gap: 28px 56px; margin-top: 44px; align-items: flex-start; }
+.fcols ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.fcols a { text-decoration: none; opacity: .85; }
+.fcols a:hover { opacity: 1; text-decoration: underline; }
+.fcols .logo { color: #fff; }
+.fcols .tag { opacity: .7; margin-top: 8px; font-size: 16px; }
+.soc { display: flex; gap: 10px; flex-wrap: wrap; }
+.soc a { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .35); display: grid; place-items: center; font: 700 14px var(--f-display); text-decoration: none; opacity: 1; }
+.soc a:nth-child(1):hover { background: #2AABEE; } .soc a:nth-child(2):hover { background: var(--coral); } .soc a:nth-child(3):hover { background: #FF3B3B; } .soc a:nth-child(4):hover { background: var(--violet); }
+.copy { margin-top: 40px; padding-top: 22px; border-top: 1px solid rgba(255, 255, 255, .15); font-size: 15px; opacity: .75; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+.mascot-f { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); top: 24px; width: 120px; }
+@media (max-width: 700px) { .mascot-f { display: none; } .band { padding-block: 64px; } }
+@media (prefers-reduced-motion: reduce) {
+  .track, .float, .confetti i { animation: none; }
+  html { scroll-behavior: auto; }
+  .btn, .phone { transition: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="heart" viewBox="0 0 24 24"><path d="M12 21s-8-5.2-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.8-8 11-8 11z" fill="#FF5C7A" stroke="#1F1B3A" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.2 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z" fill="#FFD93D" stroke="#1F1B3A" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="puzzle" viewBox="0 0 24 24"><path d="M9 3h4v3a2 2 0 1 0 4 0V3h4v6h-3a2 2 0 1 0 0 4h3v8h-6v-3a2 2 0 1 0-4 0v3H3v-6h3a2 2 0 1 0 0-4H3V3z" fill="#2ED3A0" stroke="#1F1B3A" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#2ED3A0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#0B2F25" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="mascot" viewBox="0 0 100 100">
+      <circle cx="50" cy="54" r="38" fill="#FFD93D" stroke="#1F1B3A" stroke-width="4"/>
+      <path d="M50 16 L50 6" stroke="#1F1B3A" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="6" r="5" fill="#FF5C7A" stroke="#1F1B3A" stroke-width="3"/>
+      <circle cx="37" cy="50" r="10" fill="#fff" stroke="#1F1B3A" stroke-width="3"/><circle cx="63" cy="50" r="10" fill="#fff" stroke="#1F1B3A" stroke-width="3"/>
+      <circle cx="39" cy="52" r="4.5" fill="#1F1B3A"/><circle cx="65" cy="52" r="4.5" fill="#1F1B3A"/>
+      <path d="M36 70 Q50 82 64 70" fill="none" stroke="#1F1B3A" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="26" cy="64" r="5" fill="#FF5C7A" opacity=".6"/><circle cx="74" cy="64" r="5" fill="#FF5C7A" opacity=".6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Scrolly, на главную"><svg viewBox="0 0 100 100"><use href="#mascot"/></svg>Scrolly</a>
+    <nav class="nav" aria-label="Разделы">
+      <a href="#how">Как это работает</a>
+      <a href="#parents">Родителям</a>
+      <a href="#demo">Демо</a>
+    </nav>
+    <span class="lang" aria-label="Язык"><span class="on">RU</span><span>UZ</span></span>
+    <a class="btn btn-primary btn-sm" href="#demo">Скачать демо</a>
+  </div>
+</header>
+
+<main id="top">
+<!-- 1. HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Для детей 6–12 лет</span>
+      <h1>Листай. Играй. <span class="sw">Создавай.</span></h1>
+      <p class="sub">Бесконечная лента мини-игр и головоломок, как в Reels, только полезная. А ещё ребёнок может сам придумать игру и показать друзьям.</p>
+      <p class="body">Логика, внимание и воображение тренируются сами собой, пока ребёнок листает и играет. Без рекламы, без чатов с незнакомцами, под присмотром модераторов.</p>
+      <div class="cta-row">
+        <button class="btn btn-primary" id="dl" type="button" aria-expanded="false" aria-controls="platforms">Скачать демо-версию</button>
+        <a class="btn btn-ghost" href="#how">Попробовать конструктор</a>
+      </div>
+      <div class="platforms" id="platforms">
+        <a class="chip" href="#demo">iOS · App Store</a>
+        <a class="chip" href="#demo">Android · Google Play</a>
+      </div>
+      <p class="micro">Бесплатно · Для демо нужна заявка родителя</p>
+      <div class="trust">
+        <span><svg><use href="#check"/></svg>Без рекламы</span>
+        <span><svg><use href="#check"/></svg>Модерация 24/7</span>
+        <span><svg><use href="#check"/></svg>Безопасно для детей</span>
+      </div>
+    </div>
+
+    <div class="stage" aria-hidden="true">
+      <span class="float f1"><svg width="46" height="46"><use href="#star"/></svg></span>
+      <span class="float f2"><svg width="54" height="54"><use href="#heart"/></svg></span>
+      <span class="float f3"><svg width="50" height="50"><use href="#puzzle"/></svg></span>
+      <span class="float f4"><svg width="38" height="38"><use href="#star"/></svg></span>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="track">
+            <!-- 1 color chain puzzle -->
+            <div class="card c1">
+              <span class="tag">Логика · 20 сек</span><h3>Цепочка цветов</h3>
+              <div class="art"><svg viewBox="0 0 200 200"><g stroke="#1F1B3A" stroke-width="4">
+                <rect x="14" y="14" width="52" height="52" rx="12" fill="#FF5C7A"/><rect x="74" y="14" width="52" height="52" rx="12" fill="#FFD93D"/><rect x="134" y="14" width="52" height="52" rx="12" fill="#2ED3A0"/>
+                <rect x="14" y="74" width="52" height="52" rx="12" fill="#FFD93D"/><rect x="74" y="74" width="52" height="52" rx="12" fill="#2ED3A0"/><rect x="134" y="74" width="52" height="52" rx="12" fill="#fff" stroke-dasharray="8 7"/>
+                <rect x="14" y="134" width="52" height="52" rx="12" fill="#2ED3A0"/><rect x="74" y="134" width="52" height="52" rx="12" fill="#fff" stroke-dasharray="8 7"/><rect x="134" y="134" width="52" height="52" rx="12" fill="#fff" stroke-dasharray="8 7"/></g>
+                <text x="160" y="112" font-family="Fredoka" font-size="34" font-weight="700" text-anchor="middle" fill="#1F1B3A">?</text></svg></div>
+              <div class="rail"><i><svg><use href="#heart"/></svg></i>86<i><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#1F1B3A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div>
+            </div>
+            <!-- 2 maze -->
+            <div class="card c2">
+              <span class="tag">Лабиринт · 30 сек</span><h3>Доведи шарик</h3>
+              <div class="art"><svg viewBox="0 0 200 200"><path d="M20 20 H180 V60 H60 V100 H180 V140 H60 V180 H180" fill="none" stroke="#6C4DFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="14" fill="#FF5C7A" stroke="#1F1B3A" stroke-width="4"/><path d="M168 168 l12 12 l-12 12" transform="translate(-6 -12)" fill="none" stroke="#1F1B3A" stroke-width="5" stroke-linecap="round"/><use href="#star" x="160" y="164" width="34" height="34"/></svg></div>
+              <div class="rail"><i><svg><use href="#heart"/></svg></i>142<i><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#1F1B3A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div>
+            </div>
+            <!-- 3 odd one out -->
+            <div class="card c3">
+              <span class="tag">Внимание · 15 сек</span><h3>Найди лишнее</h3>
+              <div class="art"><svg viewBox="0 0 200 200"><g stroke="#1F1B3A" stroke-width="4"><circle cx="55" cy="55" r="32" fill="#6C4DFF"/><circle cx="145" cy="55" r="32" fill="#6C4DFF"/><circle cx="55" cy="145" r="32" fill="#6C4DFF"/><rect x="113" y="113" width="64" height="64" rx="10" fill="#6C4DFF"/></g>
+                <circle cx="145" cy="145" r="52" fill="none" stroke="#FFD93D" stroke-width="6" stroke-dasharray="4 10" stroke-linecap="round"/><use href="#star" x="160" y="96" width="30" height="30"/><use href="#star" x="98" y="150" width="22" height="22"/></svg></div>
+              <div class="rail"><i><svg><use href="#heart"/></svg></i>57<i><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#1F1B3A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div>
+            </div>
+            <!-- 4 user game -->
+            <div class="card c4">
+              <span class="author"><b>М</b>Автор: Маша, 9 лет</span><h3>Пирамида из шаров</h3>
+              <div class="art"><svg viewBox="0 0 200 200"><g stroke="#1F1B3A" stroke-width="4"><circle cx="100" cy="46" r="24" fill="#FF5C7A"/><circle cx="70" cy="100" r="24" fill="#6C4DFF"/><circle cx="130" cy="100" r="24" fill="#6C4DFF"/><circle cx="40" cy="154" r="24" fill="#2ED3A0"/><circle cx="100" cy="154" r="24" fill="#2ED3A0"/><circle cx="160" cy="154" r="24" fill="#2ED3A0"/></g></svg></div>
+              <div class="rail"><i><svg><use href="#heart"/></svg></i>128<i><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#1F1B3A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div>
+            </div>
+            <!-- 5 = 1 (seamless loop) -->
+            <div class="card c1">
+              <span class="tag">Логика · 20 сек</span><h3>Цепочка цветов</h3>
+              <div class="art"><svg viewBox="0 0 200 200"><g stroke="#1F1B3A" stroke-width="4">
+                <rect x="14" y="14" width="52" height="52" rx="12" fill="#FF5C7A"/><rect x="74" y="14" width="52" height="52" rx="12" fill="#FFD93D"/><rect x="134" y="14" width="52" height="52" rx="12" fill="#2ED3A0"/>
+                <rect x="14" y="74" width="52" height="52" rx="12" fill="#FFD93D"/><rect x="74" y="74" width="52" height="52" rx="12" fill="#2ED3A0"/><rect x="134" y="74" width="52" height="52" rx="12" fill="#fff" stroke-dasharray="8 7"/>
+                <rect x="14" y="134" width="52" height="52" rx="12" fill="#2ED3A0"/><rect x="74" y="134" width="52" height="52" rx="12" fill="#fff" stroke-dasharray="8 7"/><rect x="134" y="134" width="52" height="52" rx="12" fill="#fff" stroke-dasharray="8 7"/></g>
+                <text x="160" y="112" font-family="Fredoka" font-size="34" font-weight="700" text-anchor="middle" fill="#1F1B3A">?</text></svg></div>
+              <div class="rail"><i><svg><use href="#heart"/></svg></i>86<i><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="#1F1B3A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bubble">Ура! Новая игра!</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. HOW IT WORKS -->
+<section class="band" id="how" style="background: var(--surface)">
+  <div class="wrap">
+    <span class="eyebrow">Как это работает</span>
+    <h2 class="h2">Три шага до собственной игры</h2>
+    <p class="lead">Всё просто: если умеешь листать, то справишься.</p>
+    <div class="steps">
+      <article class="step">
+        <div class="head"><span class="num">1</span><h3>Листай ленту головоломок</h3></div>
+        <div class="pic"><svg viewBox="0 0 220 170" aria-hidden="true"><rect x="70" y="8" width="80" height="154" rx="16" fill="#1F1B3A"/><rect x="76" y="16" width="68" height="138" rx="11" fill="#FFE9B8"/><rect x="82" y="26" width="56" height="52" rx="10" fill="#6C4DFF"/><rect x="82" y="88" width="56" height="52" rx="10" fill="#2ED3A0"/><path d="M178 120 V50 M166 64 l12 -14 l12 14" fill="none" stroke="#FF5C7A" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <p>Свайп вверх, и новая игра. Каждая занимает меньше минуты: найти пару, пройти лабиринт, собрать узор. Весело и не скучно.</p>
+      </article>
+      <article class="step">
+        <div class="head"><span class="num">2</span><h3>Создавай свои игры без кода</h3></div>
+        <div class="pic"><svg viewBox="0 0 220 170" aria-hidden="true"><rect x="8" y="10" width="204" height="150" rx="16" fill="#fff" stroke="#1F1B3A" stroke-width="4"/><g fill="#FFF9F0" stroke="#1F1B3A" stroke-width="3"><rect x="20" y="22" width="110" height="126" rx="10"/></g><circle cx="52" cy="60" r="16" fill="#FF5C7A" stroke="#1F1B3A" stroke-width="3"/><rect x="82" y="86" width="34" height="34" rx="8" fill="#FFD93D" stroke="#1F1B3A" stroke-width="3"/><rect x="144" y="24" width="56" height="30" rx="8" fill="#6C4DFF"/><rect x="144" y="62" width="56" height="30" rx="8" fill="#2ED3A0"/><rect x="144" y="100" width="56" height="30" rx="8" fill="#FFD93D"/><path d="M168 150 l0 -28 l9 8 l6 -3 l-14 -18 z" fill="#1F1B3A" transform="translate(-52 -22) rotate(-18 168 130)"/></svg></div>
+        <p>Выбери шаблон, добавь картинки, придумай правила и нажми «Опубликовать». Никакого программирования, только фантазия и пара тапов.</p>
+      </article>
+      <article class="step">
+        <div class="head"><span class="num">3</span><h3>Собирай лайки и делись с друзьями</h3></div>
+        <div class="pic"><svg viewBox="0 0 220 170" aria-hidden="true"><rect x="62" y="20" width="96" height="130" rx="18" fill="#DCD3FF" stroke="#1F1B3A" stroke-width="4"/><circle cx="110" cy="70" r="20" fill="#FFD93D" stroke="#1F1B3A" stroke-width="3"/><rect x="82" y="104" width="56" height="12" rx="6" fill="#6C4DFF"/><rect x="92" y="124" width="36" height="10" rx="5" fill="#fff"/><use href="#heart" x="14" y="26" width="38" height="38"/><use href="#heart" x="168" y="14" width="30" height="30"/><use href="#heart" x="172" y="70" width="42" height="42"/><circle cx="30" cy="118" r="15" fill="#2ED3A0" stroke="#1F1B3A" stroke-width="3"/><circle cx="188" cy="136" r="15" fill="#FF5C7A" stroke="#1F1B3A" stroke-width="3"/></svg></div>
+        <p>Друзья играют в твою игру и ставят сердечки. Отправь ссылку или покажи семье. Чем интереснее игра, тем больше лайков!</p>
+      </article>
+    </div>
+    <div class="after">
+      <a class="btn btn-primary" href="#demo">Начать с демо</a>
+      <a class="link" href="#demo">Посмотреть, как выглядит конструктор →</a>
+    </div>
+  </div>
+</section>
+
+<!-- 3. PARENTS -->
+<section class="band parents" id="parents">
+  <div class="wrap pgrid">
+    <div>
+      <span class="eyebrow">Для родителей</span>
+      <h2 class="h2">Экранное время, которое приносит пользу</h2>
+      <p class="lead">Scrolly сделан так, чтобы вы были спокойны, а ребёнок развивался.</p>
+      <p style="margin-top:14px;color:var(--muted)">Ленту формируют не случайные алгоритмы, а проверенные развивающие игры и модерация. Здесь нет бесконечного потока развлечений без смысла: каждая игра тренирует что-то полезное.</p>
+      <div class="facts">
+        <div class="fact"><b>0</b>рекламы</div>
+        <div class="fact">Каждая игра проверяется до публикации</div>
+      </div>
+      <div class="ill" style="margin-top:28px">
+        <svg viewBox="0 0 400 230" role="img" aria-label="Родитель и ребёнок вместе смотрят на планшет, над ними щит с галочкой">
+          <rect width="400" height="230" rx="22" fill="#E9FBF4"/>
+          <rect x="130" y="108" width="140" height="92" rx="14" fill="#1F1B3A"/><rect x="138" y="116" width="124" height="76" rx="9" fill="#FFE9B8"/>
+          <circle cx="170" cy="150" r="14" fill="#6C4DFF"/><rect x="192" y="138" width="56" height="12" rx="6" fill="#FF5C7A"/><rect x="192" y="158" width="38" height="12" rx="6" fill="#2ED3A0"/>
+          <circle cx="86" cy="104" r="24" fill="#F4C7A1" stroke="#1F1B3A" stroke-width="4"/><path d="M52 196 Q52 134 86 134 Q120 134 120 196 Z" fill="#6C4DFF" stroke="#1F1B3A" stroke-width="4"/>
+          <circle cx="314" cy="130" r="18" fill="#F4C7A1" stroke="#1F1B3A" stroke-width="4"/><path d="M290 196 Q290 154 314 154 Q338 154 338 196 Z" fill="#FF5C7A" stroke="#1F1B3A" stroke-width="4"/>
+          <path d="M200 20 L240 34 V66 Q240 92 200 104 Q160 92 160 66 V34 Z" fill="#2ED3A0" stroke="#1F1B3A" stroke-width="4" stroke-linejoin="round"/><path d="M184 62 l12 12 l22 -24" fill="none" stroke="#0B2F25" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    <div>
+      <div class="cols">
+        <div class="pcol"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#1F8F6C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 2 5 3 3 0 0 0 6 1V4a3 3 0 0 0-3 0zM15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-2 5 3 3 0 0 1-6 1V4a3 3 0 0 1 3 0z"/></svg></span><div><h3>Развивает логику</h3><p>Головоломки тренируют внимание, память, пространственное мышление и умение искать решение. Сложность растёт вместе с ребёнком.</p></div></div>
+        <div class="pcol"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#1F8F6C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5L16 9.5"/></svg></span><div><h3>Модерация 24/7</h3><p>Каждая созданная игра проходит проверку, прежде чем попасть в ленту. Команда модераторов и автоматические фильтры работают круглосуточно.</p></div></div>
+        <div class="pcol"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#1F8F6C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></span><div><h3>Только безопасный контент</h3><p>Без рекламы, без внешних ссылок, без личных переписок с незнакомцами. Никакого «взрослого» и пугающего содержимого.</p></div></div>
+      </div>
+      <ul class="checks">
+        <li><svg><use href="#check"/></svg>Родительский контроль и ограничение времени</li>
+        <li><svg><use href="#check"/></svg>Ребёнок не указывает настоящее имя и контакты</li>
+        <li><svg><use href="#check"/></svg>Вы всегда можете удалить аккаунт и данные</li>
+      </ul>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#footer-safe">Узнать больше о безопасности</a>
+        <a class="btn btn-ghost" href="#demo">Получить демо для ребёнка</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. DEMO -->
+<section class="band demo" id="demo">
+  <div class="wrap">
+    <span class="eyebrow">Ранний доступ</span>
+    <h2 class="h2">Попробуйте Scrolly первыми</h2>
+    <p class="lead">Мы запускаем бета-тест, и вы можете стать его частью. В демо-версии уже есть всё, чтобы почувствовать, как работает Scrolly. Расскажите, что понравилось, и помогите сделать приложение лучше.</p>
+    <div class="dgrid">
+      <div>
+        <ul class="inside">
+          <li><svg viewBox="0 0 24 24"><use href="#puzzle"/></svg><span><b>10 готовых головоломок:</b> от лёгких до задач посложнее</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg><span><b>1 шаблон конструктора:</b> создайте и опубликуйте свою первую мини-игру</span></li>
+          <li><svg viewBox="0 0 24 24"><use href="#heart"/></svg><span><b>Лайки и обмен:</b> покажите игру семье</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg><span><b>Ваш отзыв:</b> прямая связь с командой разработчиков</span></li>
+        </ul>
+        <div class="tiles" aria-label="10 головоломок демо-версии">
+          <div class="tile"><svg viewBox="0 0 24 24"><use href="#puzzle"/></svg></div><div class="tile"><svg viewBox="0 0 24 24"><use href="#star"/></svg></div><div class="tile"><svg viewBox="0 0 24 24"><use href="#heart"/></svg></div><div class="tile"><svg viewBox="0 0 24 24"><use href="#puzzle"/></svg></div><div class="tile"><svg viewBox="0 0 24 24"><use href="#star"/></svg></div>
+          <div class="tile"><svg viewBox="0 0 24 24"><use href="#heart"/></svg></div><div class="tile"><svg viewBox="0 0 24 24"><use href="#puzzle"/></svg></div><div class="tile"><svg viewBox="0 0 24 24"><use href="#star"/></svg></div><div class="tile"><svg viewBox="0 0 24 24"><use href="#heart"/></svg></div><div class="tile"><svg viewBox="0 0 24 24"><use href="#puzzle"/></svg></div>
+        </div>
+        <div class="next">
+          <svg class="next-mascot" viewBox="0 0 100 100" aria-hidden="true"><use href="#mascot"/></svg>
+          <h3>Что будет после заявки</h3>
+          <ol>
+            <li><span class="n">1</span><span><b>Вы оставляете заявку.</b> Это займёт около минуты.</span></li>
+            <li><span class="n">2</span><span><b>Мы пишем вам.</b> На указанный контакт придёт ссылка на демо.</span></li>
+            <li><span class="n">3</span><span><b>Ребёнок играет.</b> Потом расскажите нам, что понравилось, а что нет.</span></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="ticket" id="ticket">
+        <div class="confetti" id="confetti" aria-hidden="true"></div>
+        <div id="formWrap">
+          <h3>Получите демо-доступ</h3>
+          <p class="hint">Заявку оставляет родитель, потому что ребёнок ещё не может зарегистрироваться самостоятельно.</p>
+          <form id="req" novalidate>
+            <div class="field" id="f-name"><label for="name">Имя родителя</label><input type="text" id="name" name="name" autocomplete="name"><p class="err">Введите имя.</p></div>
+            <div class="field" id="f-contact"><label for="contact">Email или телефон</label><input type="text" id="contact" name="contact" autocomplete="email" inputmode="email" placeholder="name@mail.com или +998 90 123 45 67"><p class="err">Проверьте email или телефон.</p></div>
+            <div class="field" id="f-age"><label for="age">Возраст ребёнка</label><select id="age" name="age"><option value="">Выберите</option><option>6–7 лет</option><option>8–9 лет</option><option>10–12 лет</option></select><p class="err">Выберите возраст ребёнка.</p></div>
+            <div class="field" id="f-agree"><label class="agree" for="agree"><input type="checkbox" id="agree" name="agree"><span>Согласен(на) с политикой конфиденциальности</span></label><p class="err">Нужно согласие, чтобы отправить заявку.</p></div>
+            <button class="btn btn-lemon" type="submit">Получить демо-доступ</button>
+            <p class="small">Мы не рассылаем спам и не передаём контакты третьим лицам. Вы получите только ссылку для скачивания демо.</p>
+          </form>
+          <div class="stores">
+            <span class="chip">App Store <em>Скоро</em></span>
+            <span class="chip">Google Play <em>Бета</em></span>
+          </div>
+        </div>
+        <div class="ok" id="ok" role="status">
+          <svg width="72" height="72" viewBox="0 0 24 24"><use href="#check"/></svg>
+          <h3>Спасибо!</h3>
+          <p>Проверьте почту: мы отправим ссылку на демо.</p>
+          <p class="small" style="margin-top:14px">Это прототип страницы: данные формы никуда не отправляются.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- 5. FOOTER -->
+<footer>
+  <svg class="mascot-f" viewBox="0 0 100 100" aria-hidden="true"><use href="#mascot"/></svg>
+  <div class="wrap">
+    <div class="safe" id="footer-safe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#2ED3A0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5L16 9.5"/></svg>
+      <div><b>100% Child Safe</b><p>Мы защищаем данные детей. Scrolly не собирает личную информацию детей без согласия родителей, не показывает рекламу и не передаёт данные третьим лицам.</p></div>
+    </div>
+    <div class="fcols">
+      <div><a class="logo" href="#top"><svg viewBox="0 0 100 100" width="36" height="36"><use href="#mascot"/></svg>Scrolly</a><p class="tag">Листай. Играй. Создавай.</p></div>
+      <ul aria-label="Ссылки"><li><a href="#how">О проекте</a></li><li><a href="#parents">Для родителей</a></li><li><a href="#footer-safe">Политика конфиденциальности</a></li><li><a href="#footer-safe">Пользовательское соглашение</a></li></ul>
+      <div>
+        <p style="font-weight:800;margin-bottom:10px">Контакты</p>
+        <p>hello@scrolly.app</p>
+        <div class="soc" style="margin-top:14px" aria-label="Соцсети"><a href="#top" aria-label="Telegram">TG</a><a href="#top" aria-label="Instagram">IG</a><a href="#top" aria-label="YouTube">YT</a><a href="#top" aria-label="TikTok">TT</a></div>
+      </div>
+      <div><a class="btn btn-primary btn-sm" href="#demo">Скачать демо-версию</a></div>
+    </div>
+    <div class="copy"><span>© 2026 Scrolly. Все права защищены.</span><span>Адрес и соцсети в прототипе условные.</span></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var dl = document.getElementById('dl'), pl = document.getElementById('platforms');
+  dl.addEventListener('click', function () {
+    var open = pl.classList.toggle('open');
+    dl.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  var form = document.getElementById('req');
+  function setBad(id, bad) { document.getElementById(id).classList.toggle('invalid', bad); }
+  function validContact(v) {
+    v = v.trim();
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return true;
+    var digits = v.replace(/[\s()+-]/g, '');
+    return /^\d{9,13}$/.test(digits);
+  }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('name').value.trim();
+    var contact = document.getElementById('contact').value;
+    var age = document.getElementById('age').value;
+    var agree = document.getElementById('agree').checked;
+    var bad = { 'f-name': !name, 'f-contact': !validContact(contact), 'f-age': !age, 'f-agree': !agree };
+    var any = false;
+    Object.keys(bad).forEach(function (k) { setBad(k, bad[k]); if (bad[k]) any = true; });
+    if (any) { var first = form.querySelector('.invalid input, .invalid select'); if (first) first.focus(); return; }
+    document.getElementById('formWrap').hidden = true;
+    document.getElementById('ok').classList.add('show');
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      var box = document.getElementById('confetti'), colors = ['#6C4DFF', '#FF5C7A', '#FFD93D', '#2ED3A0'];
+      for (var i = 0; i < 36; i++) {
+        var p = document.createElement('i');
+        p.style.left = (Math.random() * 100) + '%';
+        p.style.background = colors[i % 4];
+        p.style.animationDelay = (Math.random() * 0.5) + 's';
+        box.appendChild(p);
+      }
+    }
+  });
+})();
+</script>
+
+</body></html>
